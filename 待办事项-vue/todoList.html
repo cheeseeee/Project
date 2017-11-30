@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="vue.js"></script>
+</head>
+<style>
+	*{
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		box-sizing: border-box;
+	}
+	body{
+		background: #dfdfdf;
+	}
+	header{
+		width: 100%;
+		height: 50px;
+		background: #353535;
+/*		display: flex;
+		justify-content: space-between;*/
+		line-height: 50px;
+	}
+	.top{
+		height: 50px;
+		margin: 0 auto;
+		padding: 0 400px;
+	}
+	.top>p{
+		font-size: 26px;
+		color: #fff;
+		float: left;
+		/*margin-left: 400px;*/
+	}
+	.top>input{
+		width: 300px;
+		height: 26px;
+		float: right;
+		margin-top: 13px;
+		border-radius: 5px;
+		border: none;
+		padding: 0 10px;
+		/*margin-right: 400px;*/
+		outline: none;
+	}
+	section{
+		padding: 0 400px;
+		margin-top:20px; 
+	}
+	h3{
+		padding: 5px 0;
+		display: flex;
+		justify-content: space-between;
+	}
+	h3>span{
+		width: 25px;
+		height: 25px;
+		line-height: 25px;
+		text-align: center;
+		background: #ccc;
+		border-radius: 50%;
+	}
+	ul{
+		padding: 10px 0;
+	}
+	li{
+		width: 100%;
+		height: 40px;
+		font-size: 16px;
+		padding: 5px 0 ;
+		margin-bottom: 5px;
+		border-bottom: 2px solid #808080; 
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	li>input{
+		margin: auto 0;
+	}
+	li>.checkbox{
+		/*float: left;*/
+		width: 20px;
+		height: 20px;
+		outline: none;
+		border: none;
+		/*margin: 0 auto;*/
+		padding: 5px;
+	}
+	li>.text{
+		width: 100%;
+		padding: 5px;
+		background: #dfdfdf;
+		border: none;
+		outline-color: #999999; 
+		margin: 0 10px;
+		font-weight: 700;
+
+	}
+	li>button{
+		float: right;
+		width: 25px;
+		height: 20px;
+		border-radius: 50%;
+		border: none;
+		font-weight: 700;
+		margin: auto 0;
+		border: 1px solid #aaa;
+	}
+</style>
+<body>
+	<div id="box">
+	<header>
+		<div class="top">
+			<p>ToDoList</p>
+			<input type="text" placeholder="添加ToDo" @keydown.enter="add(val)" v-model="val">
+		</div>
+		
+	</header>
+	<section>
+		<h3>正在进行<span>{{filter.doing.length}}</span></h3>
+		<ul>
+			<li v-for="v in filter.doing">
+				<input type="checkbox" class="checkbox" v-model="v.status">
+				<input class="text" type="text" v-model="v.content">
+				<button @click="del(v.id)">—</button>
+			</li>
+		</ul>
+		<h3>已经完成<span>{{filter.done.length}}</span></h3>
+		<ul>
+			<li v-for="v in filter.done">
+				<input type="checkbox" class="checkbox" v-model="v.status">
+				<input class="text" type="text" v-model="v.content">
+				<button @click="del(v.id)">—</button>
+
+			</li>
+		</ul>
+	</section>
+	</div>
+	<script>
+/*		let data = [{id:1,content:'好好学习1',status:true},
+				{id:2,content:'好好学习2',status:false},
+				{id:3,content:'好好学习3',status:false},
+				{id:4,content:'好好学习4',status:false},
+				{id:5,content:'好好学习5',status:false}];
+
+		localStorage.things = JSON.stringify(data);*/
+
+
+		let arr = new Vue({
+			el:'#box',
+			data:{
+				things:[],
+				val:'',
+			},
+			computed:{
+				filter(){
+					let data = {doing:[],done:[]}
+					data.doing = this.things.filter(ele=>ele.status == false);
+					data.done = this.things.filter(ele=>ele.status == true);
+					return data;
+				}
+
+			},
+
+			methods:{
+				del(e){
+					this.things = this.things.filter(ele=>ele.id != e);
+				},
+
+				add(val){
+						this.things.push({id:"++this.things[this.things.leng-1].id",content:this.val,status:false});
+						this.val='';
+				}
+			},
+
+			mounted(){
+				this.things = JSON.parse(localStorage.things);
+				// this.ids = this.data
+				}	
+			});
+			arr.$watch('things',function(v,old){
+				localStorage.things = JSON.stringify(this.things);
+			},{deep:true})
+	</script>
+
+</body>
+</html>
