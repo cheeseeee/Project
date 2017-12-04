@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>便利贴</title>
+	<script src="vue.js"></script>
+</head>
+<style>
+*{
+	margin:0;
+	padding:0;
+	list-style:none;
+	/*box-sizing:border-box;*/
+}
+html,body{
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: #ffd9e0;
+
+}
+header{
+	width: 100%;
+	height: 80px;
+	background: #999;
+}
+section{
+	width: 100%;
+	position: absolute;
+	top: 80px;
+	bottom: 0;
+	/*height: calc(100% - 80px);*/
+	background: #dfdfdf;
+}
+.list{
+	color: #000;
+	width: 150px;
+	height: 200px;
+	overflow: hidden;
+	position: absolute;
+	border-radius: 5px 5px 0 0;
+}
+.title{
+	width: 100%;
+	height: 20px;
+	padding: 0 5px;
+	font-size: 14px;
+	display: flex:;
+	justify-content: space-between;
+	border-radius: 5px 5px 0 0;
+
+}
+button{
+	border: none;
+	outline: none;
+	margin-right: 4px;
+	width: 20px;
+	height: 20px;
+	padding: 1px;
+	float: right;
+	background: none;
+}
+textarea{
+	padding: 10px;
+	width: 100%;
+	height: 178px;
+	border: none;
+	resize: none;
+	outline: none;
+}
+.active{
+	z-index: 999;
+}
+#down{
+	width: 80px;
+	height: 30px;
+	border-radius: 5px;
+	background: skyblue;
+}
+option{
+	background: #fff;
+	border-bottom: 1px solid #ccc;
+}
+.mmm{
+	display: none;
+}
+
+</style
+<body>
+	<div id="app">
+		
+		<header>
+			<select name="类型" id="down" v-model="message" @change="choose(message)">
+				<option>全部</option>
+				<option v-for="(v,i) in types">{{v}}</option>
+			</select>
+		</header>
+			
+		<section @dblclick="add">
+			<my-note v-for="(items,index) in note" :msg="items" :key="items.id" v-on:schange="update" v-on:del='del' v-on:addclass='addclass(index)' v-on:moves="move"></my-note>
+		</section>
+	<div class="san"></div>
+
+	</div>
+
+	<script>
+		
+		/*let arr=[
+				{id:1,content:'你好啊',color:'blue',x:100,y:100,type:'生活'},
+				{id:2,content:'你也是',color:'red',x:100,y:350,type:'生活'},
+				{id:3,content:'有钱吗',color:'green',x:800,y:350,type:'生活'},
+				{id:4,content:'一边去',color:'yellow',x:800,y:100,type:'生活'},
+				// {id:5,content:'这就滚',color:'black',x:800,y:300,type:'生活'},
+				]
+*/
+		// localStorage.note = JSON.stringify(arr);
+
+		Vue.component('my-note',{
+			props:['msg'],    //父主键传递给子主键
+			data:function(){
+				return{
+					smsg: Object.assign({},this.msg)
+				}
+			},
+			template:`
+			<div class="list" v-bind:style="{left:smsg.x+'px',top:smsg.y+'px',border:'1px solid '+smsg.color}" @mousedown = "move(smsg)">
+			<div class="title" @click="addclass" v-bind:style="{background:smsg.color}">
+			<strong>{{smsg.type}}</strong>
+			
+			<button @click="del(smsg.id)">x</button>
+			</div>
+
+			<textarea v-model="smsg.content"></textarea>
+			</div>`,
+
+			methods:{
+				del(id){
+					this.$emit('del',id);
+				},
+				addclass(){
+					this.$emit('addclass');
+				},
+				move(value){
+					this.$emit('moves',value);
+				}
+			},
+			watch:{
+				'smsg':{
+					handler:function(v,oldv){ 
+					console.log(v,oldv)   
+						this.$emit('schange',this.smsg);
+					},
+					deep:true
+				}
+			},
+		});
+
+		let app = new Vue({
+			el:'#app',
+			data:{
+				note:[],
+				types:['生活','娱乐','学习','工作'],
+				message:'全部',
+			},
+			methods:{
+				update(v){
+					let index = 0;
+					this.note.forEach((ele,i)=>{
+					if(ele.id == v.id){
+						index = i;
+					}
+				})
+
+				this.note.splice(index,1,v);
+				},
+
+				addclass(index){
+					let lists = document.querySelectorAll('.list');
+					lists.forEach(element=>{
+						element.classList.remove('active');
+					})
+
+					lists[index].classList.add('active');
+				},
+				del(ids){
+					this.note = this.note.filter(ele=>ele.id != ids);
+				},
+
+				add(e){
+
+					let id = this.note[this.note.length-1].id+1;
+					let color = `rgb(${Math.floor(Math.random()*256)},${Math.floor(Math.random()*256)},${Math.floor(Math.random()*256)})`;
+					let x = e.clientX,y = e.clientY -80;
+					let type = this.types[Math.floor(Math.random()*this.types.length)];
+					let obj = {id,content:'',color,x,y,type};
+					this.note.push(obj);
+				},
+				/*choose(index){
+					this.note.filter(ele=>{
+						console.log(ele);
+						if(ele.type!=this.types[index]){
+							console.log({"#"}+ele.id)
+							let listss = document.querySelector('#'+ele.id);
+							console.log(listss)
+						}
+
+					})
+					this.note[index].filter(ele.type!=types[index]).classList.add('mmm');
+				},*/
+				choose(val){
+					let lists = document.querySelectorAll('.list');
+					lists.forEach(element=>{
+						let type = element.children[0].children[0].innerHTML;
+						if(type == val){
+							element.classList.remove('mmm');
+						}else if(val == '全部'){
+							element.classList.remove('mmm');
+						}else{
+							element.classList.add('mmm');
+						}
+					})
+				},
+				move(v){
+					document.addEventListener('mousemove',fn);
+					document.addEventListener('mouseup',function(){
+					document.removeEventListener('mousemove',fn);
+					});
+					function fn(e){
+						let left=e.clientX,top=e.clientY;
+						v.x=left-10;
+						v.y=top-80
+					}
+				}
+			},
+			watch:{
+				'note':{
+					handler:function(v,oldv){
+						localStorage.note = JSON.stringify(this.note);
+					}, 
+					deep:true,
+				}
+			},
+ 
+			mounted(){
+				this.note = JSON.parse(localStorage.note);
+			}
+		})
+	</script>
+</body>
+</html>
