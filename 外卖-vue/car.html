@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>car</title>
+	<script src="vue.js"></script>
+</head>
+ <!-- :style="{color:item.type == activeType?'red':''}" -->
+<body>
+	<div id="app">
+		分类：
+		<div v-for="item in food" @click="newfood(item.type)" :style="{color:item.type == list?'red':''}">{{item.type}}</div>
+食物：
+	<ul>
+		<li v-for="v in list.content">
+			名称： {{v.name}}   价格：{{v.price}}  数量：{{v.count}}
+			<span @click="add(v.id)">+</span> </br>
+            总价:{{v.price * v.count}}
+		</li>
+	</ul>	
+	</div>
+	<script>
+		let app = new Vue({
+			el:'#app',
+			data:{
+				food:[
+				{
+				type:'wine',
+					content:[
+						{id:1,name:'脉动1',price:4,count:1},
+						{id:1,name:'脉动2',price:4,count:1},
+						{id:1,name:'脉动3',price:4,count:1},
+						{id:1,name:'脉动4',price:4,count:1},
+						{id:1,name:'脉动5',price:4,count:1},
+					],
+				},
+
+				{
+				type:'snack',
+					content:[
+						{id:1,name:'脉动6',price:4,count:1},
+						{id:1,name:'脉动7',price:4,count:1},
+						{id:1,name:'脉动8',price:4,count:1},
+						{id:1,name:'脉动9',price:4,count:1},
+						{id:1,name:'脉动0',price:4,count:1},
+					],
+				},
+				],
+			list :'',
+			ids:'',
+		},
+			methods:{
+				newfood(type){
+					this.list = this.food.filter(element=>element.type == type)[0];
+
+				},
+			add(id){
+                this.ids=this.list.content.filter(element=>element.id == id);
+                this.ids[0].count++;
+            }
+		}
+		})
+	</script>
+</body>
+</html>
