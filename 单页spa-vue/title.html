@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>spa</title>
+	<script src="vue.js"></script>
+	<script src="vue-router.js"></script>
+	<script src="index.js"></script>
+</head>
+<body>
+	<!-- 
+		spa: single page web appliication
+		html:不同页面用不同ajax加载
+		hash:
+	-->
+		<div id="app">
+			<nav>
+				<a href="#/">index</a>
+				<a href="#/admin">admin</a>
+				<a href="#/student">student</a>
+
+			</nav>
+		<!-- 跳转之后的内容存入↓ -->
+			<router-view></router-view>
+		</div>
+		<script>
+			//hash
+			const routes = [
+
+				{path:'/',component:index},
+				{path:'/admin',component:admin,
+
+			children:[
+				{path:'class',component:classes},     
+				{path:'student',component:studenta,},
+				{path:'teacher',component:teachera},
+			]
+			},
+				{path:'/student',component:student}
+			];
+
+			//定义规则 ↑
+			
+			//实例化路由↓
+			const router = new VueRouter({
+				routes
+			})
+			//挂载到Vue实例上面
+			let app = new Vue({
+				el:'#app',
+				router,
+			})
+		</script>
+</body>
+</html>
